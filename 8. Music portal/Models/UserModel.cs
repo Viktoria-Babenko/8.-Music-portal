@@ -27,6 +27,6 @@ namespace _8._Music_portal.Models
         [Display(Name = "Електронная почта ")]
         public string? email { get; set; }
 
-        public int? Status { get; set; }
+        public bool? Status { get; set; }
     }
 }
