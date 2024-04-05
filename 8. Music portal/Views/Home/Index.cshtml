@@ -1,8 +1,49 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<_8._Music_portal.Models.SongsModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h1>Top Music</h1>
+
+<div class="d-inline-flex external">
+    <div class="container-fluid">
+        @if (Context.Session.GetString("Login") != null)
+        {
+            <a class="navbar-brand a" asp-area="" asp-controller="Songs" asp-action="Create">Add a song</a>
+        }
+        @if (Context.Session.GetString("Login") == "Admin")
+        {
+            <a class="navbar-brand a" asp-area="" asp-controller="Songs" asp-action="Create">Add a song</a>
+            <a class="navbar-brand a" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+        }
+        
+    </div>
+    @foreach (var item in Model)
+    {
+        @if (item != null){
+        <div class="div2">
+            <audio class="img2" src='@Html.DisplayFor(modelItem => item.Track)' />
+            <div>
+                <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
+                <table>
+                    <tr>
+                        <td><p>@Html.DisplayNameFor(modelItem => item.Name): </p></td>
+                        <td><p> @Html.DisplayFor(modelItem => item.Name)</p></td>
+                    <tr>
+                        <td><p>@Html.DisplayNameFor(modelItem => item.Genre.Name): </p></td>
+                        <td><p> @Html.DisplayFor(modelItem => item.Genre.Name)</p></td>
+                    <tr>
+                        <td><p>@Html.DisplayNameFor(modelItem => item.Performer.Name): </p></td>
+                        <td><p> @Html.DisplayFor(modelItem => item.Performer.Name)</p></td>
+                </table>
+                <div class="div1">
+                    <a class="botton" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a class="botton" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a class="botton" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </div> 
+            </div>
+        </div>
+        }}
+ </div>
