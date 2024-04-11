@@ -14,7 +14,7 @@ builder.Services.AddDbContext<MusicPortalContext>(options => options.UseSqlServe
 builder.Services.AddDistributedMemoryCache();// добавляем IDistributedMemoryCache
 builder.Services.AddSession();
 
-builder.Services.AddScoped<IRepository, MyRepository>();
+builder.Services.AddUnitOfWorkService();
 
 builder.Services.AddControllersWithViews();
 
