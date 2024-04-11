@@ -1,16 +1,37 @@
 ﻿using _8._Music_portal.Models;
 using _8._Music_portal.NewFolder;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace _8._Music_portal.Repository
 {
     public class MyRepository : IRepository
     {
-        private readonly MusicPortalContext _context;
+        private readonly MusicPortalContext _context; 
 
         public MyRepository(MusicPortalContext context)
         {
             _context = context;
+        }
+        public SelectList GetGenres()
+        {
+            var genr = new SelectList(_context.Genres, "Id", "Name");
+            return genr;
+        }
+        public SelectList GetGenres(SongsModel songsModel)
+        {
+            var genr = new SelectList(_context.Genres, "Id", "Name", songsModel.GenreID);
+            return genr;
+        }
+        public SelectList GetPerformers()
+        {
+            var genr = new SelectList(_context.Performers, "Id", "Name");
+            return genr;
+        }
+        public SelectList GetPerformers(SongsModel songsModel)
+        {
+            var genr = new SelectList(_context.Performers, "Id", "Name", songsModel.GenreID);
+            return genr;
         }
         public async Task<List<UserModel>> GetAllUser()
         {
@@ -32,7 +53,10 @@ namespace _8._Music_portal.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(m => m.Id == id);
         }
-
+        public async Task<SongsModel> SongsCreate(SongsModel songsModel)
+        {
+            return await _context.Songs.FirstOrDefaultAsync(a => a.Name == songsModel.Name && a.Genre == songsModel.Genre && a.Performer == songsModel.Performer && a.Track == songsModel.Track);
+        }
         public async Task CreateUser(UserModel c)
         {
             if(c.Login != "Admin")
@@ -43,9 +67,9 @@ namespace _8._Music_portal.Repository
             await _context.SaveChangesAsync();
         }
 
-        public void UpdateUser(UserModel c)
+        public void UpdateUser(UserModel userModel)
         {
-            _context.Entry(c).State = EntityState.Modified;
+            _context.Update(userModel);
         }
 
         public async Task DeleteUser(int id)
