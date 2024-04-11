@@ -16,9 +16,6 @@ namespace _8._Music_portal.Models
         [Display(Name = "Логин")]
         public string? Login { get; set; }
 
-        [Required(ErrorMessage = "Поле должно быть установлено.")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
         public string? Password { get; set; }
         public string? Salt { get; set; }
 
