@@ -6,22 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _8._Music_portal.Models;
+using _8._Music_portal.Repository;
 
 namespace _8._Music_portal.Controllers
 {
     public class PerformerController : Controller
     {
-        private readonly MusicPortalContext _context;
+        IRepository<PerformerModel> repo;
 
-        public PerformerController(MusicPortalContext context)
+        public PerformerController(IRepository<PerformerModel> r)
         {
-            _context = context;
+            repo = r;
         }
 
         // GET: Performer
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Performers.ToListAsync());
+            return View(await repo.GetAll());
         }
 
         // GET: Performer/Details/5
@@ -32,8 +33,7 @@ namespace _8._Music_portal.Controllers
                 return NotFound();
             }
 
-            var performerModel = await _context.Performers
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var performerModel = await repo.Get(id.Value);
             if (performerModel == null)
             {
                 return NotFound();
@@ -57,8 +57,7 @@ namespace _8._Music_portal.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(performerModel);
-                await _context.SaveChangesAsync();
+                await repo.Create(performerModel);
                 return RedirectToAction(nameof(Index));
             }
             return View(performerModel);
@@ -72,7 +71,7 @@ namespace _8._Music_portal.Controllers
                 return NotFound();
             }
 
-            var performerModel = await _context.Performers.FindAsync(id);
+            var performerModel = await repo.Get(id.Value);
             if (performerModel == null)
             {
                 return NotFound();
@@ -96,8 +95,8 @@ namespace _8._Music_portal.Controllers
             {
                 try
                 {
-                    _context.Update(performerModel);
-                    await _context.SaveChangesAsync();
+                    repo.Update(performerModel);
+                    await repo.Save();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -123,8 +122,7 @@ namespace _8._Music_portal.Controllers
                 return NotFound();
             }
 
-            var performerModel = await _context.Performers
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var performerModel = await repo.Get(id.Value);
             if (performerModel == null)
             {
                 return NotFound();
@@ -138,19 +136,17 @@ namespace _8._Music_portal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var performerModel = await _context.Performers.FindAsync(id);
+            var performerModel = await repo.Get(id);
             if (performerModel != null)
             {
-                _context.Performers.Remove(performerModel);
+                await repo.Delete(performerModel.Id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool PerformerModelExists(int id)
         {
-            return _context.Performers.Any(e => e.Id == id);
+            return repo.ModelExists(id);
         }
     }
 }
