@@ -7,43 +7,38 @@
 
 <h1>Top Music</h1>
 
-<div class="d-inline-flex external">
-    <div class="container-fluid">
-        @if (Context.Session.GetString("Login") != null)
+<div class="flex external">
+    <div >
+        @foreach (var item in Model)
         {
-            <a class="navbar-brand a" asp-area="" asp-controller="Songs" asp-action="Create">Add a song</a>
-        }
-        @if (Context.Session.GetString("Login") == "Admin")
-        {
-            <a class="navbar-brand a" asp-area="" asp-controller="Songs" asp-action="Create">Add a song</a>
-            <a class="navbar-brand a" asp-area="" asp-controller="User" asp-action="Index">Users</a>
-        }
-        
+            @if (item != null)
+            {
+                <div class="div2">
+                    <div>
+                        <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
+                        <table>
+                            <tr>
+                                <td><p>@Html.DisplayNameFor(modelItem => item.Genre): </p></td>
+                                <td><p> @Html.DisplayFor(modelItem => item.Genre.Name)</p></td> </tr>
+                            <tr>
+                                <td><p>@Html.DisplayNameFor(modelItem => item.Performer): </p></td>
+                                <td><p> @Html.DisplayFor(modelItem => item.Performer.Name)</p></td></tr>
+                            <tr>
+                                <td colspan="2"><audio opacity="0" controls src='@Html.DisplayFor(modelItem => item.Track)'></audio></td>
+                                <td></td>
+                            </tr>
+                        </table>
+                        @* <audio opacity="0" controls src='@Html.DisplayFor(modelItem => item.Track)'></audio> *@
+                        @if (Context.Session.GetString("Login") == "Admin")
+                        {
+                            <div class="div1">
+                                <a class="botton" asp-controller="Songs" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                <a class="botton" asp-controller="Songs" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <a class="botton" asp-controller="Songs" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }}
     </div>
-    @foreach (var item in Model)
-    {
-        @if (item != null){
-        <div class="div2">
-            <audio class="img2" src='@Html.DisplayFor(modelItem => item.Track)' />
-            <div>
-                <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
-                <table>
-                    <tr>
-                        <td><p>@Html.DisplayNameFor(modelItem => item.Name): </p></td>
-                        <td><p> @Html.DisplayFor(modelItem => item.Name)</p></td>
-                    <tr>
-                        <td><p>@Html.DisplayNameFor(modelItem => item.Genre.Name): </p></td>
-                        <td><p> @Html.DisplayFor(modelItem => item.Genre.Name)</p></td>
-                    <tr>
-                        <td><p>@Html.DisplayNameFor(modelItem => item.Performer.Name): </p></td>
-                        <td><p> @Html.DisplayFor(modelItem => item.Performer.Name)</p></td>
-                </table>
-                <div class="div1">
-                    <a class="botton" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a class="botton" asp-action="Details" asp-route-id="@item.Id">Details</a>
-                    <a class="botton" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </div> 
-            </div>
-        </div>
-        }}
  </div>
