@@ -8,25 +8,38 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/_8._Music_portal.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="body">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow header pb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow header pb-3">
             <div class="container-fluid">
-                <a class="navbar-brand a" asp-area="" asp-controller="Home" asp-action="Index">Home page</a>
-                <a class="navbar-brand a" asp-area="" asp-controller="Home" asp-action="Register">Registration</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home page</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Register">Registration</a>
                 @if (Context.Session.GetString("Login") == null)
                 {
-                    <a class="navbar-brand a" asp-area="" asp-controller="Home" asp-action="Login">Logоn</a>
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Login">Logоn</a>
                 }
                 else
                 {
                     <span class="navbar-brand">Здравствуйте, @Context.Session.GetString("FirstName")  @Context.Session.GetString("LastName")</span>
-                    <a class="navbar-brand a" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+                    <a class="navbar-brand " asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
                 }
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container ">
+        <div class="container-fluid div1">
+            @if (Context.Session.GetString("Login") != null)
+            {
+                <a class="navbar-brand a" asp-area="" asp-controller="Songs" asp-action="Create">Add a Song</a>
+            }
+            @if (Context.Session.GetString("Login") == "Admin")
+            {
+                <a class="navbar-brand a" asp-area="" asp-controller="Genre" asp-action="Index">Genre</a>
+                <a class="navbar-brand a" asp-area="" asp-controller="Performer" asp-action="Index">Performer</a>
+                <a class="navbar-brand a" asp-area="" asp-controller="User" asp-action="Index">Users</a>
+            }
+
+        </div>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -34,7 +47,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2024 - _8._Music_portal - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <p>&copy; @DateTime.Now.Year </p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
