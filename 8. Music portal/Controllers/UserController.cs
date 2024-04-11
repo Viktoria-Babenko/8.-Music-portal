@@ -43,7 +43,7 @@ namespace _8._Music_portal.Controllers
             await repo.Save();
             return View(userModel);
         }
-
+        
         // GET: UserModels/Create
         public IActionResult Create()
         {
@@ -90,7 +90,7 @@ namespace _8._Music_portal.Controllers
             var userModel = await repo.GetUser(id);
             if (userModel != null)
             {
-                repo.DeleteUser(userModel.Id);
+                repo?.DeleteUser(userModel.Id);
             }
 
             await repo.Save();
