@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _8._Music_portal.Models;
 using _8._Music_portal.NewFolder;
+using _8._Music_portal.Repository;
 
 namespace _8._Music_portal.Controllers
 {
     public class SongsController : Controller
     {
         IRepository repo;
+        IWebHostEnvironment _appEnvironment;
 
-        public SongsController(IRepository r)
+        public SongsController(IRepository r, IWebHostEnvironment a)
         {
             repo = r;
+            _appEnvironment = a;
         }
 
         // GET: SongsModels
@@ -43,10 +46,10 @@ namespace _8._Music_portal.Controllers
         }
 
         // GET: SongsModels/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            //ViewData["GenreID"] = new SelectList(_context.Genres, "Id", "Id");
-            //ViewData["PerformerID"] = new SelectList(_context.Performers, "Id", "Id");
+            ViewData["GenreID"] = repo.GetGenres();
+            ViewData["PerformerID"] = repo.GetPerformers();
             return View();
         }
 
@@ -55,15 +58,40 @@ namespace _8._Music_portal.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,GenreID,PerformerID,Track")] SongsModel songsModel)
+        public async Task<IActionResult> Create([Bind("Id,Name,GenreID,PerformerID,Track")] SongsModel songsModel, IFormFile uploadedFile)
         {
+            if (uploadedFile != null)
+            {
+                string path = "/Songs/" + uploadedFile.FileName; // имя файла
+
+                // Сохраняем файл в папку Files в каталоге wwwroot
+                // Для получения полного пути к каталогу wwwroot
+                // применяется свойство WebRootPath объекта IWebHostEnvironment
+                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream); // копируем файл в поток
+                }
+                songsModel.Track = path;
+                var songs = await repo.SongsCreate(songsModel);
+                if (songs != null)
+                {
+                    if (songs.Name == songsModel.Name && songs.Performer == songsModel.Performer || songs.Genre == songsModel.Genre)
+                    {
+                        ModelState.AddModelError("", "Такой трек уже есть в списке!");
+                    }
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Вы не выбрали файл трека !");
+            }
             if (ModelState.IsValid)
             {
                 await repo.CreateSong(songsModel);
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["GenreID"] = new SelectList(_context.Genres, "Id", "Id", songsModel.GenreID);
-            //ViewData["PerformerID"] = new SelectList(_context.Performers, "Id", "Id", songsModel.PerformerID);
+            ViewData["GenreID"] = repo.GetGenres(songsModel);
+            ViewData["PerformerID"] = repo.GetPerformers(songsModel);
             return View(songsModel);
         }
 
@@ -80,8 +108,8 @@ namespace _8._Music_portal.Controllers
             {
                 return NotFound();
             }
-            //ViewData["GenreID"] = new SelectList(_context.Genres, "Id", "Id", songsModel.GenreID);
-            //ViewData["PerformerID"] = new SelectList(_context.Performers, "Id", "Id", songsModel.PerformerID);
+            ViewData["GenreID"] = repo.GetGenres(songsModel);
+            ViewData["PerformerID"] = repo.GetPerformers(songsModel);
             return View(songsModel);
         }
 
@@ -116,8 +144,8 @@ namespace _8._Music_portal.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["GenreID"] = new SelectList(_context.Genres, "Id", "Id", songsModel.GenreID);
-            //ViewData["PerformerID"] = new SelectList(_context.Performers, "Id", "Id", songsModel.PerformerID);
+            ViewData["GenreID"] = repo.GetGenres(songsModel);
+            ViewData["PerformerID"] = repo.GetPerformers(songsModel);
             return View(songsModel);
         }
 
